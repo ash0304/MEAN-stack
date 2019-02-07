@@ -1,5 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-import { Post } from '../post.model';
+import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { PostsService } from '../posts.service';
 
@@ -11,7 +10,6 @@ import { PostsService } from '../posts.service';
 export class PostCreateComponent {
   enteredTitle = '';
   enteredContent = '';
-  @Output() postCreated = new EventEmitter<Post>();
 
   constructor(public postsService: PostsService) {}
 
@@ -20,11 +18,7 @@ export class PostCreateComponent {
     if (form.invalid) {
       return;
     }
-    // 新增輸入資料
-    const post: Post = {
-      title: form.value.title,
-      content: form.value.content
-    };
-    this.postCreated.emit(post);
+    // 使用Service添加Post
+    this.postsService.addPost(form.value.title, form.value.content);
   }
 }
