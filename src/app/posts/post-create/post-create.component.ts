@@ -20,5 +20,7 @@ export class PostCreateComponent {
     }
     // 使用Service添加Post
     this.postsService.addPost(form.value.title, form.value.content);
+    // 重製表單
+    form.resetForm();
   }
 }
