@@ -2,9 +2,23 @@
 const express = require('express');
 // 引用body-parser
 const bodyParser = require('body-parser');
+// 引用mongoose
+const mongoose = require('mongoose');
+
+// 引用post的schema
+const Post = require('./models/post');
 
 // 設app為使用express
 const app = express();
+// 使用mongoose的connect方法連線
+mongoose.connect("mongodb+srv://ash:5TWh7MsJM2nJaYSl@cluster0-ct9r0.mongodb.net/node-angular?retryWrites=true", { useNewUrlParser: true })
+  .then(() => {
+    console.log("Connect to Database!");
+  })
+  .catch(() => {
+    console.log("Connection Failed!");
+  });
+
 // 使用body parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -27,8 +41,12 @@ app.use((req, res, next) => {
 
 // Mideeleware - POST
 app.post("/api/posts", (req, res ,next) => {
-  const post = req.body;
-  console.log(post);
+  const post = new Post({
+    title: req.body.title,
+    content : req.body.content
+  });
+  // 將post的資料儲存回mongoDB
+  post.save();
   res.status(201).json({
     message: 'Post added sucessfully'
   });
