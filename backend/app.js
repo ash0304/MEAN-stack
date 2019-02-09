@@ -53,21 +53,13 @@ app.post("/api/posts", (req, res ,next) => {
 });
 
 app.get('/api/posts', (req, res, next) => {
-  const posts = [
-    {
-      id: 'fadf12321l',
-      title: 'First server-side post',
-      content: 'This is coming from the server'
-    },
-    {
-      id: '2312321hkl2',
-      title: 'Second server-side post',
-      content: 'This is coming from the server!'
-    },
-  ];
-  res.status(200).json({
-    message: 'Posts fetched sucessfully!',
-    posts: posts
+  // 從mongoDB找到資料
+  Post.find().then(documents => {
+    // console.log(documents);
+    res.status(200).json({
+      message: 'Posts fetched sucessfully!',
+      posts: documents
+    });
   });
 });
 
