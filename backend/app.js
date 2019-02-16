@@ -39,19 +39,21 @@ app.use((req, res, next) => {
   next();
 })
 
-// Mideeleware - POST
+//  POST
 app.post("/api/posts", (req, res ,next) => {
   const post = new Post({
     title: req.body.title,
     content : req.body.content
   });
   // 將post的資料儲存回mongoDB
-  post.save();
-  res.status(201).json({
-    message: 'Post added sucessfully'
+  post.save().then(result => {
+    res.status(201).json({
+      message: 'Post added sucessfully',
+      postId: result._id
+    });
   });
 });
-
+//  GET
 app.get('/api/posts', (req, res, next) => {
   // 從mongoDB找到資料
   Post.find().then(documents => {
@@ -60,6 +62,14 @@ app.get('/api/posts', (req, res, next) => {
       message: 'Posts fetched sucessfully!',
       posts: documents
     });
+  });
+});
+
+//  DELETE
+app.delete('/api/posts/:id', (req, res, next) => {
+  Post.deleteOne({_id: req.params.id}).then(result => {
+    console.log(result);
+    res.status(200).json({ message: "Post deleted!" });
   });
 });
 

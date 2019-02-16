@@ -29,6 +29,10 @@ export class PostListComponent implements OnInit, OnDestroy {
       });
   }
 
+  onDelete(postId: string) {
+    this.postsService.deletePost(postId);
+  }
+
   // 防止記憶體洩漏 Memory Leak Destroy時取消訂閱
   ngOnDestroy() {
     this.postsSub.unsubscribe();
