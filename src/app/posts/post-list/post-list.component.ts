@@ -16,15 +16,18 @@ export class PostListComponent implements OnInit, OnDestroy {
   //   { title: 'Third Post', content: 'This is the third post\'s content' },
   // ];
   posts: Post[] = [];
+  isLoading = false;
   // 新增變數存放訂閱物件, 利於後續取消訂閱
   private postsSub: Subscription;
 
   constructor(public postsService: PostsService) {}
 
   ngOnInit() {
+    this.isLoading = true;
     this.postsService.getPosts();
     this.postsSub = this.postsService.getPostUpdateListener()
       .subscribe((posts: Post[]) => {
+        this.isLoading = false;
         this.posts = posts;
       });
   }

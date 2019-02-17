@@ -1,11 +1,14 @@
 <mat-card>
-  <form (submit)="onAddPost(postForm)" #postForm="ngForm">
+  <mat-spinner *ngIf="isLoading"></mat-spinner>
+  <form (submit)="onSavePost(postForm)" #postForm="ngForm" *ngIf="!isLoading">
     <mat-form-field>
-      <input matInput type="text" ngModel name="title" required minlength="3" placeholder="Post Title" #title="ngModel">
+      <!-- post?.title 功能在於會強迫angular先檢查post是否存在 , 在判斷是否讀取title -->
+      <input matInput type="text" [ngModel]="post?.title" name="title" required minlength="3" placeholder="Post Title" #title="ngModel">
       <mat-error *ngIf="title.invalid">Please enter a post title</mat-error>
     </mat-form-field>
     <mat-form-field>
-      <textarea matInput rows="6" ngModel name="content" required placeholder="Post Content" #content="ngModel"></textarea>
+      <!-- post?.content 功能在於會強迫angular先檢查post是否存在 , 在判斷是否讀取content -->
+      <textarea matInput rows="6" [ngModel]="post?.content" name="content" required placeholder="Post Content" #content="ngModel"></textarea>
       <mat-error *ngIf="content.invalid">Please enter a post content</mat-error>
     </mat-form-field>
     <button
