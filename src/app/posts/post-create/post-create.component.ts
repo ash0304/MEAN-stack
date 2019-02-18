@@ -15,6 +15,7 @@ export class PostCreateComponent implements OnInit {
   post: Post;
   isLoading = false;
   form: FormGroup;
+  imagePreview: any;
   private mode = 'create';
   private postId: string;
 
@@ -66,6 +67,15 @@ export class PostCreateComponent implements OnInit {
     this.form.get('image').updateValueAndValidity();
     // console.log(file);
     // console.log(this.form);
+    // 藉由FileReader物件 , 能以非同步方式讀取儲存在用戶端的檔案（或原始資料暫存）內容
+    const reader = new FileReader();
+    // 事件處理器，於讀取完成時觸發。
+    reader.onload = () => {
+      // 將編碼後的result內容指定回imagePreview
+      this.imagePreview = reader.result;
+    };
+    // readAsDataURL 讀取file,讀取完成後屬性 result 將以 data:URL格式(base64編碼)的字串來表示讀入的資料內容
+    reader.readAsDataURL(file);
   }
 
   onSavePost() {
