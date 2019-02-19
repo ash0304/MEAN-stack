@@ -30,15 +30,24 @@ const storage = multer.diskStorage({
 
 //  POST
 router.post("", multer({storage: storage}).single('image'), (req, res, next) => {
+  const url = req.protocol + '://' + req.get("host");
   const post = new Post({
     title: req.body.title,
-    content: req.body.content
+    content: req.body.content,
+    imagePath: url + "/images/" + req.file.filename
   });
   // 將post的資料儲存回mongoDB
   post.save().then(result => {
     res.status(201).json({
       message: "Post added sucessfully",
-      postId: result._id
+      post : {
+        // 這種寫法會複製一個createdPost將_id除外的其他東西都包含(註解部分)
+        ...createdPost,
+        id : createdPost._id
+        // title: createdPost.title,
+        // content: createdPost.content,
+        // imagePath: createdPost.imagePath
+      }
     });
   });
 });
