@@ -37,13 +37,13 @@ router.post("", multer({storage: storage}).single('image'), (req, res, next) => 
     imagePath: url + "/images/" + req.file.filename
   });
   // 將post的資料儲存回mongoDB
-  post.save().then(result => {
+  post.save().then(createdPost => {
     res.status(201).json({
       message: "Post added sucessfully",
       post : {
         // 這種寫法會複製一個createdPost將_id除外的其他東西都包含(註解部分)
         ...createdPost,
-        id : createdPost._id
+        id : createdPost._id,
         // title: createdPost.title,
         // content: createdPost.content,
         // imagePath: createdPost.imagePath

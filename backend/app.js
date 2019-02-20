@@ -1,3 +1,5 @@
+// 引用path
+const path = require("path");
 // 引用 express模組
 const express = require('express');
 // 引用body-parser
@@ -21,6 +23,7 @@ mongoose.connect("mongodb+srv://ash:5TWh7MsJM2nJaYSl@cluster0-ct9r0.mongodb.net/
 // 使用body parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use("/images", express.static(path.join("backend/images")));
 
 // Middleware 中介軟體
 app.use((req, res, next) => {
