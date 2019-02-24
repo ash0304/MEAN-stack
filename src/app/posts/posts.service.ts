@@ -91,7 +91,7 @@ export class PostsService {
           title,
           content,
           imagePath: ''
-        }
+        };
         updatedPosts[oldPostIndex] = post;
         this.posts = updatedPosts;
         this.postsUpdated.next([...this.posts]);
