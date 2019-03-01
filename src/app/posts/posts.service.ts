@@ -10,16 +10,17 @@ import { Post } from './post.model';
 @Injectable({providedIn: 'root'})
 export class PostsService {
   private posts: Post[] = [];
-  private postsUpdated = new Subject<Post[]>();
+  private postsUpdated = new Subject<{posts: Post[], postCount: number}>();
 
   constructor( private http: HttpClient, private router: Router) {}
 
-  getPosts() {
-    this.http.get<{message: string, posts: any }>('http://localhost:3000/api/posts')
+  getPosts(postsPerPage: number, currentPage: number) {
+    const queryParams = `?pagesize=${postsPerPage}&page=${currentPage}`;
+    this.http.get<{message: string, posts: any, maxPosts: number }>('http://localhost:3000/api/posts' + queryParams)
     // 透過pipe過濾
     .pipe(map((postData) => {
       // 回傳postData的posts使用JS的map方法
-      return postData.posts.map(post => {
+      return { posts: postData.posts.map(post => {
         // 回傳需要的資料格式
         return {
           title: post.title,
@@ -27,11 +28,11 @@ export class PostsService {
           id: post._id,
           imagePath: post.imagePath
         };
-      });
+      }), maxPosts: postData.maxPosts };
     }))
-    .subscribe((transformedPosts) => {
-      this.posts = transformedPosts;
-      this.postsUpdated.next([...this.posts]);
+    .subscribe((transformedPostsData) => {
+      this.posts = transformedPostsData.posts;
+      this.postsUpdated.next({ posts: [...this.posts], postCount: transformedPostsData.maxPosts});
     });
   }
 
@@ -51,16 +52,6 @@ export class PostsService {
     // 發送Post請求 定義型別 & 傳送資料post
     this.http.post<{message: string, post: Post}>('http://localhost:3000/api/posts', postData)
       .subscribe((responseData) => {
-        const post: Post = {
-          id: responseData.post.id,
-          title,
-          content,
-          imagePath: responseData.post.imagePath
-        };
-
-
-        this.posts.push(post);
-        this.postsUpdated.next([...this.posts]);
         this.router.navigate(['/']);
     });
   }
@@ -84,30 +75,11 @@ export class PostsService {
     // 對後端api發生put請求 , 並傳送post
     this.http.put('http://localhost:3000/api/posts/' + id, postData)
       .subscribe(response => {
-        const updatedPosts = [...this.posts];
-        const oldPostIndex = updatedPosts.findIndex(p => p.id === id);
-        const post: Post = {
-          id,
-          title,
-          content,
-          imagePath: ''
-        };
-        updatedPosts[oldPostIndex] = post;
-        this.posts = updatedPosts;
-        this.postsUpdated.next([...this.posts]);
         this.router.navigate(['/']);
       });
   }
 
   deletePost(postId: string) {
-    this.http.delete('http://localhost:3000/api/posts/' + postId)
-      .subscribe(() => {
-        // 透過filter篩選 , 將post.id不等於postId留在前端渲染陣列中, 只刪除等於的id
-        const updatedPosts = this.posts.filter(post => post.id !== postId);
-        // 篩選過的陣列重新指定回posts
-        this.posts = updatedPosts;
-        // Update the copy of this.posts
-        this.postsUpdated.next([...this.posts]);
-      });
+    return this.http.delete('http://localhost:3000/api/posts/' + postId);
   }
 }

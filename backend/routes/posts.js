@@ -75,6 +75,7 @@ router.get("", (req, res, next) => {
   const pageSize = +req.query.pagesize;
   const currentPage = +req.query.page;
   const postQuery = Post.find();
+  let fetchedPosts;
   if (pageSize && currentPage) {
     postQuery
       .skip(pageSize * (currentPage -1 ))
@@ -82,13 +83,19 @@ router.get("", (req, res, next) => {
   }
   // 從mongoDB找到資料
   postQuery.then(documents => {
-    // console.log(documents);
+    fetchedPosts = documents;
+    return Post.count();
+  })
+  .then(count => {
     res.status(200).json({
       message: "Posts fetched sucessfully!",
-      posts: documents
+      posts: fetchedPosts,
+      maxPosts: count
     });
-  });
+  })
 });
+
+
 
 router.get("/:id", (req, res, next) => {
   Post.findById(req.params.id).then(post => {
